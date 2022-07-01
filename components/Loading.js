@@ -21,7 +21,7 @@ export default function Loading({}) {
                 return anime.random(-360, 360);
             },
             borderRadius: function () {
-                return ['0%', anime.random(10, 20) + '%'];
+                return ['4px', anime.random(10, 20) + '%'];
             },
             duration: 1000,
             delay: function () {

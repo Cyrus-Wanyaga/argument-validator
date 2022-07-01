@@ -1,8 +1,13 @@
 import styles from '../styles/Home.module.css'
 import Layout from "../components/Layout";
-import {createRef, useState} from "react";
+import {createRef, useEffect, useState} from "react";
 import anime from "animejs";
 import Loading from "../components/Loading";
+import {insertSymbols, getSymbols, insertConclusion} from '../lib/Rules'
+
+//If the weather is chilly outside then Cyrus will carry a sweater || p → q
+//Cyrus has carried a sweater || q
+//The weather is chilly outside || p
 
 export default function Home() {
     const [premises, setPremises] = useState([{
@@ -15,9 +20,12 @@ export default function Home() {
     const [conclusionText, setConclusionText] = useState("")
     const [conclusionSymbolText, setConclusionSymbolText] = useState("")
     const [loading, setLoading] = useState(false)
+    const [showSymbolsBox, setShowSymbolsBox] = useState(false)
 
     const myRef = createRef();
     const premiseRef = createRef();
+    const symbolsRef = createRef();
+    const symbolsTextRef = createRef();
 
     const addPremises = (event) => {
         event.preventDefault()
@@ -47,13 +55,19 @@ export default function Home() {
         }, 500)
     }
 
+    const symbolInHTML = (str) => {
+        str.replace(/(&#(\d+);)/g, (match, capture, charCode) =>
+            String.fromCharCode(charCode)
+        );
+        return str
+    }
+
     const removePremise = (event) => {
         event.preventDefault()
 
         const animation = anime({
             targets: myRef.current,
             rotate: [0, 360],
-            opacity: [1, 0],
             easing: 'easeInOutCubic',
             duration: 500
         })
@@ -132,13 +146,77 @@ export default function Home() {
         )
     }
 
+    const checkArgumentForValidity = (event) => {
+        event.preventDefault()
+        setLoading(true)
+        const tempPremises = []
+        premises.forEach(value => {
+            tempPremises.push(value.premiseSymbolText + '*' + value.premiseText)
+        })
+        tempPremises.push(conclusionSymbolText + "*" + conclusionText)
+        console.log("The response is")
+        console.log(insertSymbols(tempPremises))
+        insertConclusion(conclusionSymbolText + '*' + "-->" + conclusionText)
+        setTimeout(() => {
+            setLoading(false)
+        }, 5000)
+        // console.log(getSymbols())
+    }
+
+    const addLogicalSymbol = (event) => {
+        event.preventDefault()
+        const text = event.target.innerHTML
+        console.log(text + " --> " + text.charCodeAt(text.length - 1))
+    }
+
+    const displaySymbolsTextBox = (event) => {
+        event.preventDefault()
+        if (!showSymbolsBox) {
+            const symbolsTextAnim = anime({
+                targets: symbolsTextRef.current,
+                borderRadius: ['8px 0 0 8px', '8px 0 0 0'],
+                duration: 500
+            })
+            symbolsTextAnim.play()
+            const animation = anime({
+                targets: symbolsRef.current,
+                opacity: [0, 1],
+                scale: 1,
+                easing: 'easeInOutCubic',
+                duration: 500
+            })
+            animation.play()
+        } else {
+            const animation = anime({
+                targets: symbolsRef.current,
+                opacity: [1, 0],
+                scale: 0,
+                easing: 'easeInOutCubic',
+                duration: 500
+            })
+            animation.play()
+            const symbolsTextAnim = anime({
+                targets: symbolsTextRef.current,
+                borderRadius: ['8px 0 0 0', '8px 0 0 8px'],
+                duration: 500
+            })
+            symbolsTextAnim.play()
+        }
+
+        setTimeout(() => {
+            setShowSymbolsBox(!showSymbolsBox)
+        }, 500)
+    }
+
     if (loading) return (<Loading/>)
 
     return (
         <Layout title={"Argument Validator"}>
-            <div className={"d-flex justify-content-center w-100 p-5"}>
-                <div className={"d-block w-50 justify-content-between"}>
+            <div className={"d-flex justify-content-center w-100"}
+                 style={{minHeight: '100vh', overflowY: 'scroll', position: 'relative'}}>
+                <div className={"d-block w-50 justify-content-between py-5"}>
                     <h3 className={"d-flex justify-content-center"}>Argument Validator</h3>
+                    <hr className={"mt-5"}/>
                     {premises.map((premise, key) => (
                         <div key={premise.premise} className={"d-flex align-items-center mt-5"}
                              ref={premiseRef}>
@@ -167,13 +245,29 @@ export default function Home() {
                             disabled={showConclusionInput}>Add conclusion
                     </button>
                     {showConclusionInput ? (
-                        <button type={"button"} className={"btn btn-success mt-5 w-100 py-3"} onClick={() => {
-                            setLoading(true)
-                            setTimeout(() => {
-                                setLoading(false)
-                            }, 5000)
-                        }}>Check
+                        <button type={"button"} className={"btn btn-success mt-5 w-100 py-3"}
+                                onClick={checkArgumentForValidity}>Check
                             validity</button>) : null}
+                </div>
+            </div>
+            <div className={styles.symbols + " d-block"}>
+                <div className={styles.symbols_text} ref={symbolsTextRef}>
+                    <p onClick={displaySymbolsTextBox}>Symbols</p>
+                </div>
+                <div className={styles.symbols_characters}
+                     ref={symbolsRef}>
+                    <div className={"row mx-0"}>
+                        <p className={"col-6"} data-bs-toggle="tooltip" data-bs-placement="top"
+                           title="Logical OR" onClick={addLogicalSymbol}>&or;</p>
+                        <p className={"col-6"} data-bs-toggle="tooltip" data-bs-placement="top"
+                           title="Logical AND" onClick={addLogicalSymbol}>&and;</p>
+                    </div>
+                    <div className={"row mx-0"}>
+                        <p className={"col-6"} data-bs-toggle="tooltip" data-bs-placement="top"
+                           title="Then" onClick={addLogicalSymbol}>&#x2192;</p>
+                        <p className={"col-6"} data-bs-toggle="tooltip" data-bs-placement="top"
+                           title="IFF" onClick={addLogicalSymbol}>&#x21d4;</p>
+                    </div>
                 </div>
             </div>
         </Layout>

@@ -133,3 +133,40 @@
     margin: 0 8px;
     width: 100%;
 }
+
+.symbols {
+    position: fixed;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    transform: translateY(15%);
+}
+
+.symbols_text {
+    /*background-color: purple;*/
+    background-color: #22488c;
+    padding: 16px;
+    border-radius: 8px 0 0 8px;
+    height: fit-content;
+}
+
+.symbols_text p {
+    cursor: pointer;
+    text-align: center;
+}
+
+.symbols_characters {
+    background-color: #0d6efd;
+    padding: 16px;
+    height: fit-content;
+    border-radius: 0 0 0 8px;
+    /*display: none;*/
+    opacity: 0;
+    transform: scale(0);
+    transform-origin: right top;
+}
+
+.symbols_characters p {
+    cursor: pointer;
+    padding: 16px;
+}
