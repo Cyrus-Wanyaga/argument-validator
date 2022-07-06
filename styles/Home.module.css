@@ -170,3 +170,10 @@
     cursor: pointer;
     padding: 16px;
 }
+
+.validity_response {
+    background-color: mediumseagreen;
+    border-radius: 8px;
+    padding: 24px;
+    text-align: center;
+}

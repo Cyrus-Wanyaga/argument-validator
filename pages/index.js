@@ -3,7 +3,7 @@ import Layout from "../components/Layout";
 import {createRef, useEffect, useState} from "react";
 import anime from "animejs";
 import Loading from "../components/Loading";
-import {insertSymbols, getSymbols, insertConclusion} from '../lib/Rules'
+import {insertSymbols, getSymbols} from '../lib/Rules'
 
 //If the weather is chilly outside then Cyrus will carry a sweater || p → q
 //Cyrus has carried a sweater || q
@@ -21,6 +21,7 @@ export default function Home() {
     const [conclusionSymbolText, setConclusionSymbolText] = useState("")
     const [loading, setLoading] = useState(false)
     const [showSymbolsBox, setShowSymbolsBox] = useState(false)
+    const [validityResponse, setValidityResponse] = useState(null)
 
     const myRef = createRef();
     const premiseRef = createRef();
@@ -154,13 +155,12 @@ export default function Home() {
             tempPremises.push(value.premiseSymbolText + '*' + value.premiseText)
         })
         tempPremises.push(conclusionSymbolText + "*" + conclusionText)
-        console.log("The response is")
-        console.log(insertSymbols(tempPremises))
-        insertConclusion(conclusionSymbolText + '*' + "-->" + conclusionText)
+        const validity = insertSymbols(tempPremises)
         setTimeout(() => {
             setLoading(false)
-        }, 5000)
-        // console.log(getSymbols())
+        }, 1000)
+        console.log(validity)
+        setValidityResponse(validity)
     }
 
     const addLogicalSymbol = (event) => {
@@ -217,6 +217,11 @@ export default function Home() {
                 <div className={"d-block w-50 justify-content-between py-5"}>
                     <h3 className={"d-flex justify-content-center"}>Argument Validator</h3>
                     <hr className={"mt-5"}/>
+                    {validityResponse !== null &&
+                        (<div className={styles.validity_response}>
+                            {validityResponse.validity ? (<p>The argument is valid and the rule is {validityResponse.validityRule}</p>) : (<p>The argument is invalid</p>)}
+                        </div>)
+                    }
                     {premises.map((premise, key) => (
                         <div key={premise.premise} className={"d-flex align-items-center mt-5"}
                              ref={premiseRef}>
