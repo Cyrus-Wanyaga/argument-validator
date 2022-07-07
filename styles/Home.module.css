@@ -172,8 +172,23 @@
 }
 
 .validity_response {
-    background-color: mediumseagreen;
+    background-color: #198754;
     border-radius: 8px;
     padding: 24px;
     text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.validity_response span {
+    cursor: pointer;
+    padding: 8px;
+    background-color: transparent;
+    transition: 0.5s all ease-in;
+}
+
+.validity_response span:hover {
+    background-color: darkseagreen;
+    border-radius: 8px;
 }

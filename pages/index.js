@@ -175,7 +175,7 @@ export default function Home() {
             const symbolsTextAnim = anime({
                 targets: symbolsTextRef.current,
                 borderRadius: ['8px 0 0 8px', '8px 0 0 0'],
-                duration: 500
+                duration: 250
             })
             symbolsTextAnim.play()
             const animation = anime({
@@ -213,13 +213,16 @@ export default function Home() {
     return (
         <Layout title={"Argument Validator"}>
             <div className={"d-flex justify-content-center w-100"}
-                 style={{minHeight: '100vh', overflowY: 'scroll', position: 'relative'}}>
+                 style={{minHeight: '100vh', position: 'relative'}}>
                 <div className={"d-block w-50 justify-content-between py-5"}>
                     <h3 className={"d-flex justify-content-center"}>Argument Validator</h3>
                     <hr className={"mt-5"}/>
                     {validityResponse !== null &&
                         (<div className={styles.validity_response}>
-                            {validityResponse.validity ? (<p>The argument is valid and the rule is {validityResponse.validityRule}</p>) : (<p>The argument is invalid</p>)}
+                            {validityResponse.validity ? (
+                                <p className={"w-100"}>The argument is valid and the rule is {validityResponse.validityRule}</p>) : (
+                                <p className={"w-100"}>The argument is invalid</p>)}
+                            <span className="material-symbols-rounded" onClick={() => setValidityResponse(null)}>close</span>
                         </div>)
                     }
                     {premises.map((premise, key) => (
@@ -233,6 +236,7 @@ export default function Home() {
                                    id={"premiseSymbol-" + premise.premise.toString()}
                                    onChange={setPremiseSymbolText}
                                    value={premise.premiseSymbolText}
+                                // onFocus={attachInputFieldToSymbolsText}
                                    style={{fontStyle: 'italic', fontWeight: '200'}}/>
                             <div className={styles.icon_bg + ` p-3 d-flex justify-content-center align-items-center`}>
                             <span
@@ -249,10 +253,8 @@ export default function Home() {
                             onClick={() => setShowConclusionInput(!showConclusionInput)}
                             disabled={showConclusionInput}>Add conclusion
                     </button>
-                    {showConclusionInput ? (
-                        <button type={"button"} className={"btn btn-success mt-5 w-100 py-3"}
-                                onClick={checkArgumentForValidity}>Check
-                            validity</button>) : null}
+                    {showConclusionInput ? (<button type={"button"} className={"btn btn-success mt-5 w-100 py-3"}
+                                                    onClick={checkArgumentForValidity}>Check validity</button>) : null}
                 </div>
             </div>
             <div className={styles.symbols + " d-block"}>
